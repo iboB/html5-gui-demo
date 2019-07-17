@@ -187,45 +187,15 @@ private:
     tcp::acceptor m_acceptor;
 };
 
-int main(int argc, char* argv[])
+int main()
 {
     ///////////////////////////////////////////////////////////////////////////
-    // parse args
-    auto address = boost::asio::ip::tcp::v4(); // net::ip::make_address(argAddr);
-    uint16_t port = 7654;
-
-    if (argc % 2 == 0)
-    {
-        cerr << "bad args\n";
-        return 1;
-    }
-
-    for (int i=1; i<argc; i+=2)
-    {
-        const char* arg = argv[i];
-        if (strcmp(arg, "--port"))
-        {
-            int argPort = uint16_t(atoi(arg));
-            if (argPort == 0)
-            {
-                cout << "Bad port " << arg << ". Defaulting to " << port;
-            }
-            else
-            {
-                port = argPort;
-            }
-        }
-        else
-        {
-            cerr << "Unknown arg `" << arg << "`\n";
-            return 1;
-        }
-    }
+    // args
+    const auto address = boost::asio::ip::tcp::v4(); // net::ip::make_address(argAddr);
+    const uint16_t port = 7654;
 
     ///////////////////////////////////////////////////////////////////////////
     // run
-
     Server server(tcp::endpoint(address, port));
-
     return server.run();
 }
