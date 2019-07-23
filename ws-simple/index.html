@@ -1,75 +1,57 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <script language="javascript" type="text/javascript">
-        var output;
-        var output_number;
-        var ws;
+<script language="javascript" type="text/javascript">
+"use strict";
+var output;
+var ws;
 
-        function init() {
-            output = document.getElementById("output");
-            output_number = document.getElementById("output_number");
-            loadWebSocket();
-        }
+function init() {
+    output = document.getElementById("output");
 
-        function loadWebSocket() {
-            var wsUri = 'ws://' + window.location.hostname+ ':7654';
+    let wsUri = 'ws://' + window.location.hostname+ ':7654';
 
-            ws = new WebSocket(wsUri);
-            ws.onopen = function(evt) { onOpen(evt) };
-            ws.onclose = function(evt) { onClose(evt) };
-            ws.onmessage = function(evt) { onMessage(evt); };
-            ws.onerror = function(evt) { onError(evt) };
-        }
+    ws = new WebSocket(wsUri);
+    ws.onopen = () => {
+        writeToScreen('CONNECTED', output);
+        doSend('WebSocket rocks!');
+    };
+    ws.onclose = () => writeToScreen('DISCONNECTED');
+    ws.onmessage = msg => writeToScreen('<span style="color: blue;">RESPONSE: ' + msg.data + '</span>');
+    ws.onerror = msg => writeToScreen('<span style="color: red;">ERROR: ' + msg.data + '</span>');
+}
 
-        function onOpen(evt) {
-            writeToScreen("CONNECTED", output);
-            doSend("WebSocket rocks");
-        }
+function writeToScreen(message) {
+    let p = document.createElement('p');
+    p.style.wordWrap = 'break-word';
+    p.innerHTML = message;
 
-        function onClose(evt) {
-            writeToScreen("DISCONNECTED", output);
-        }
+    if (output.childNodes.length > 5) {
+        output.removeChild(output.childNodes[0]);
+    }
+    output.appendChild(p);
+}
 
-        function onMessage(evt) {
-            writeToScreen('<span style="color: blue;">RESPONSE: ' + evt.data + '</span>', output);
-        }
+function doSend(message) {
+    writeToScreen("SENT: " + message);
+    ws.send(message);
+}
 
-        function onError(evt) {
-            writeToScreen('<span style="color: red;">ERROR:</span> ' + evt.data, output);
-        }
+window.addEventListener('load', init, false);
 
-        function doSend(message) {
-            writeToScreen("SENT: " + message, output);
-            ws.send(message);
-        }
+function wsSend() {
+    doSend(document.getElementById('data_to_send').value);
+}
 
-        function writeToScreen(message, o) {
-            pre = document.createElement('p');
-            pre.style.wordWrap = 'break-word';
-            pre.innerHTML = message;
+function wsSendBinary() {
+    const array = new Float32Array(5);
 
-            if (o.childNodes.length > 5) {
-                o.removeChild(o.childNodes[0]);
-            }
-            o.appendChild(pre);
-        }
-
-        window.addEventListener('load', init, false);
-
-        function wsSend() {
-            doSend(document.getElementById('data_to_send').value);
-        }
-
-        function wsSendBinary() {
-            const array = new Float32Array(5);
-
-            for (var i = 0; i < array.length; ++i) {
-                array[i] = i / 2;
-            }
-            doSend(array);
-        }
-    </script>
+    for (var i = 0; i < array.length; ++i) {
+        array[i] = i / 2;
+    }
+    doSend(array);
+}
+</script>
 </head>
 <body>
     <h1>Echo</h1>
@@ -79,6 +61,5 @@
     <button id="sender_binary" onClick="wsSendBinary()">Send Binary</button>
 
     <div id="output"></div>
-    <div id="output_number"></div>
 </body>
 </html>

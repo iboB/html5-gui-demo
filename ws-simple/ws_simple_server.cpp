@@ -95,6 +95,7 @@ public:
 
     void onReceive(const PacketPtr& packet)
     {
+        cout << "Received: " << packet->textBuffer << '\n';
         // echo
         write(packet);
     }
