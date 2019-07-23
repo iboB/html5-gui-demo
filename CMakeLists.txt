@@ -7,6 +7,8 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 project(html5-gui-demo)
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
 ######################
 # warnings
 if(MSVC)
@@ -23,13 +25,20 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${WG_WARNING_FLAGS}")
 set(CMAKE_MODULE_PATH
     ${CMAKE_MODULE_PATH}
     ${CMAKE_CURRENT_SOURCE_DIR}/cmake
+    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/cef-cmake/cmake
 )
 include(src_group)
 
+######################
+# deps
 find_package(Threads REQUIRED)
+
+set(CEF_USE_SANDBOX OFF CACHE BOOL "Force turning off of sandbox")
+include(cef_cmake)
 
 ######################
 # subdirectories
 add_subdirectory(third_party)
 
 add_subdirectory(ws-simple)
+add_subdirectory(cef-sync)

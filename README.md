@@ -4,6 +4,7 @@ Demos for using HTML 5 as a GUI for C++ apps
 # Demos list
 
 * [ws-simple](ws-simple): A simple echo-server using WebSockets. Uses [Boost.Beast](https://github.com/boostorg/beast)
+* [cef-sync](cef-sync): A simple [CEF](https://bitbucket.org/chromiumembedded/cef-project/src/master/) echo application using synchronous communication
 
 # Building
 
