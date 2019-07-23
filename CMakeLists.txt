@@ -5,7 +5,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-project(word-grid)
+project(html5-gui-demo)
 
 ######################
 # warnings
