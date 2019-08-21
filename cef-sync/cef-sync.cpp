@@ -1,11 +1,10 @@
-// CEF-Demos
+// HTML 5 GUI Demo
 // Copyright (c) 2019 Borislav Stanimirov
 //
 // Distributed under the MIT Software License
 // See accompanying file LICENSE.txt or copy at
-// http://opensource.org/licenses/MIT
+// https://opensource.org/licenses/MIT
 //
-// Bare-bones minimal demo. Creates a simple Chromium browser.
 #include <include/cef_app.h>
 #include <include/cef_client.h>
 
