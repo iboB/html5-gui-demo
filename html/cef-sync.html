@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script language="javascript" type="text/javascript">
+"use strict";
+var output;
+var ws;
+
+function init() {
+    output = document.getElementById("output");
+    Module.setReceiveFunc(onReceive);
+}
+
+function writeToScreen(message) {
+    let p = document.createElement('p');
+    p.style.wordWrap = 'break-word';
+    p.innerHTML = message;
+
+    if (output.childNodes.length > 5) {
+        output.removeChild(output.childNodes[0]);
+    }
+    output.appendChild(p);
+}
+
+function onReceive(message) {
+    writeToScreen('<span style="color: blue;">RESPONSE: ' + message + '</span>');
+}
+
+function doSend(message) {
+    writeToScreen("SENT: " + message);
+    Module.echo(message);
+}
+
+window.addEventListener('load', init, false);
+
+function wsSend() {
+    doSend(document.getElementById('data_to_send').value);
+}
+
+function wsSendBinary() {
+    const array = new Float32Array(5);
+
+    for (var i = 0; i < array.length; ++i) {
+        array[i] = i / 2;
+    }
+    doSend(array);
+}
+</script>
+</head>
+<body>
+    <h1>Echo</h1>
+
+    <input type="text" id="data_to_send" value="hello"></input>
+    <button id="sender" onClick="wsSend()">Send</button>
+    <button id="sender_binary" onClick="wsSendBinary()">Send Binary</button>
+
+    <div id="output"></div>
+</body>
+</html>

@@ -39,6 +39,9 @@ include(cef_cmake)
 ######################
 # subdirectories
 add_subdirectory(third_party)
+set_target_properties(cefdll_wrapper PROPERTIES FOLDER "third_party")
+
+add_subdirectory(helper_lib)
 
 add_subdirectory(ws-simple)
 add_subdirectory(cef-sync)

@@ -5,4 +5,6 @@ add_executable(cef-sync
 
 target_link_libraries(cef-sync
     cefdll_wrapper
+    jsbind-cef
+    helper_lib
 )
