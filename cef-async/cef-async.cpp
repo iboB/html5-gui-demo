@@ -76,6 +76,23 @@ public:
         return m_resourceManager->GetResourceHandler(browser, frame, request);
     }
 
+    bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
+        CefRefPtr<CefFrame> frame,
+        CefProcessId source_process,
+        CefRefPtr<CefProcessMessage> message) override
+    {
+        if (message->GetName() == "onEcho")
+        {            
+            auto text = message->GetArgumentList()->GetString(0).ToString();
+            std::cout << "onEcho received: " << text << std::endl;
+            auto response = CefProcessMessage::Create("onEchoResponse");
+            response->GetArgumentList()->SetString(0, text);
+            frame->SendProcessMessage(PID_RENDERER, response);
+            return true;
+        }
+        return false;
+    }
+
 private:
     CefRefPtr<CefResourceManager> m_resourceManager;
 
@@ -92,8 +109,9 @@ void setReceiveFunc(jsbind::local func)
 
 void echo(std::string text)
 {
-    std::cout << "Called echo with text: " << text << std::endl;
-    jsOnReceiveFunc.to_local()(text);
+    auto msg = CefProcessMessage::Create("onEcho");
+    msg->GetArgumentList()->SetString(0, text);
+    CefV8Context::GetCurrentContext()->GetFrame()->SendProcessMessage(PID_BROWSER, msg);
 }
 
 JSBIND_BINDINGS(App)
@@ -125,6 +143,21 @@ public:
         jsbind::deinitialize();
     }
 
+    bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
+        CefRefPtr<CefFrame> frame,
+        CefProcessId source_process,
+        CefRefPtr<CefProcessMessage> message) override 
+    {
+        if (message->GetName() == "onEchoResponse")
+        {
+            auto text = message->GetArgumentList()->GetString(0).ToString();
+            jsbind::enter_context();
+            jsOnReceiveFunc.to_local()(text);
+            jsbind::exit_context();
+            return true;
+        }
+        return false;
+    }
 private:
     IMPLEMENT_REFCOUNTING(RendererApp);
     DISALLOW_COPY_AND_ASSIGN(RendererApp);
@@ -153,7 +186,7 @@ int main(int argc, char* argv[])
 
     CefRefPtr<CefApp> app = nullptr;
     std::string appType = commandLine->GetSwitchValue("type");
-    if (appType == "renderer" || appType == "zygote" || appType.empty())
+    if (appType == "renderer" || appType == "zygote")
     {
         app = new RendererApp;
         // use nullptr for other process types
@@ -170,7 +203,7 @@ int main(int argc, char* argv[])
     settings.no_sandbox = true;
 #endif
 
-    CefInitialize(args, settings, app, windowsSandboxInfo);
+    CefInitialize(args, settings, nullptr, windowsSandboxInfo);
 
     CefWindowInfo windowInfo;
 
