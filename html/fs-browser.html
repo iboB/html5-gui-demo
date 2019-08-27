@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>File Manager :: CEF Demos</title>
+
+<style>
+* { margin:0; padding:0; } /* clear all */
+body {
+    background-color: darkgray;
+    font-family: monospace;
+    font-size: large;
+}
+.apptype {
+    background-color: black;
+    color: lightgray;
+    padding-left: 10px;
+}
+.error {
+    background-color: lightcoral;
+    padding-left: 20px;
+}
+.pathtext {
+    font-size: larger;
+    background-color: darkkhaki;
+    padding: 10px;
+}
+.filelist {
+    background-color: khaki;
+    padding: 10px;
+    overflow-y: scroll;
+    box-sizing: border-box;
+    height: calc(100vh - 43px);
+}
+.entry {
+    padding-left: 10px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+.dir:hover, .up:hover {
+    background-color: white;
+    cursor: pointer;
+}
+.dir::after {
+    content: " >";
+}
+.file:hover {
+    background-color: lightgray;
+}
+</style>
+
+</head>
+
+<body>
+<div class="apptype">App type: <span id="apptype"></span></div>
+<div class="error" id="error"></div>
+<div class="pathtext">Path: <span id="pathtext"></span></div>
+<div id="filelist" class="filelist"></div>
+</body>
+
+<script>
+'use strict';
+
+// const Mock = true;
+
+const pathText = document.getElementById('pathtext');
+const fileList = document.getElementById('filelist');
+const errorText = document.getElementById('error');
+
+let request = null;
+
+let requestContents = path => {
+    request('contents:' + path);
+}
+
+let onResponse = json => {
+    const r = JSON.parse(json);
+    if (r.type === 'Contents') {
+        errorText.innerHTML = ''; // clear error
+
+        const path = r.path;
+        pathText.innerHTML = path;
+
+        let html = '';
+        if (path !== '') {
+            const up = path.substr(0, path.lastIndexOf('/'));
+            html += `<div class="entry up" onclick="requestContents('${up}')">^</div>`;
+        }
+        for (const d of r.dirs) {
+            html += `<div class="entry dir" onclick="requestContents('${path + '/' + d}')">${d}</div>`;
+        }
+        for (const f of r.files) {
+            html += `<div class="entry file">${f}</div>`;
+        }
+        fileList.innerHTML = html;
+    } else if (r.type === 'Error') {
+        errorText.innerHTML = r.msg;
+    }
+};
+
+// determine app type and setup
+const appTypeText = document.getElementById('apptype');
+
+function setupCef() {
+    appTypeText.innerHTML = 'CEF';
+    requestContents('');
+}
+
+function setupMock() {
+    appTypeText.innerHTML = 'Mock';
+    request = req => {
+        const split = req.split(':');
+        const r = split[0];
+        const arg = split[1];
+
+        if (r === 'contents') {
+            if (arg === '') {
+                return onResponse(JSON.stringify({
+                    type: 'Contents',
+                    path: '',
+                    files: ['file1', 'file 2', 'other file'],
+                    dirs: ['dir0', 'some other dir'],
+                }));
+            }
+            else if (arg === '/dir0') {
+                return onResponse(JSON.stringify({
+                    type: 'Contents',
+                    path: '/dir0',
+                    files: ['dfile', 'dfile 45'],
+                    dirs: ['another dir'],
+                }));
+            }
+            return onResponse(JSON.stringify({
+                type: 'Error',
+                msg: 'Unknown dir ' + arg,
+            }));
+        }
+
+        return onResponse(JSON.stringify({
+            type: 'Error',
+            msg: 'Unknown request ' + r,
+        }));
+    };
+    requestContents('');
+}
+
+function setupWS(ws) {
+    appTypeText.innerHTML = 'WS';
+    ws.onmessage = msg => onResponse(msg.data);
+    request = req => ws.send(req);
+    requestContents('');
+}
+
+if (typeof Module !== 'undefined') {
+    // We have a jsbind Module, this means we're in a CEF
+    setupCef();
+} else if (typeof Mock !== 'undefined') {
+    // Mock requested
+    setupMock();
+} else {
+    // Try a websocket connection. If it fails, fall back to Mock
+    try {
+        let wsUri = 'ws://' + window.location.hostname+ ':7654';
+
+        let ws = new WebSocket(wsUri);
+        ws.onopen = () => setupWS(ws);
+        ws.onclose = setupMock;
+        ws.onerror = msg => console.log('WS Error', msg.data);
+    }
+    catch (e) {
+        setupMock();
+    }
+}
+</script>
+
+</html>
