@@ -16,7 +16,6 @@
 
 #include <jsbind.hpp>
 
-
 #define URI_ROOT "http://htmldemos"
 const char* const URL = URI_ROOT "/cef-echo.html";
 

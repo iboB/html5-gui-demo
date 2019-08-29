@@ -4,3 +4,6 @@
 [submodule "third_party/jsbind"]
 	path = third_party/jsbind
 	url = https://github.com/Chobolabs/jsbind.git
+[submodule "third_party/sokol"]
+	path = third_party/sokol
+	url = https://github.com/floooh/sokol.git
