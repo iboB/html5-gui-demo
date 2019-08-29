@@ -5,12 +5,14 @@
 // See accompanying file LICENSE.txt or copy at
 // https://opensource.org/licenses/MIT
 //
+#include <helper/DirUtil.hpp>
 #include <iostream>
+
+#include <cef_cmake/disable_warnings.h>
 #include <include/cef_app.h>
 #include <include/cef_client.h>
 #include <include/wrapper/cef_resource_manager.h>
-
-#include <helper/DirUtil.hpp>
+#include <cef_cmake/reenable_warnings.h>
 
 #include <jsbind.hpp>
 
@@ -43,7 +45,7 @@ public:
     CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override { return this; }
     CefRefPtr<CefRequestHandler> GetRequestHandler() override { return this; }
 
-    void OnBeforeClose(CefRefPtr<CefBrowser> browser) override
+    void OnBeforeClose(CefRefPtr<CefBrowser> /*browser*/) override
     {
         CefQuitMessageLoop();
     }

@@ -5,14 +5,17 @@
 // See accompanying file LICENSE.txt or copy at
 // https://opensource.org/licenses/MIT
 //
+#include <helper/DirUtil.hpp>
 #include <iostream>
+
+#include <cef_cmake/disable_warnings.h>
 #include <include/cef_app.h>
 #include <include/cef_client.h>
 #include <include/wrapper/cef_resource_manager.h>
-
-#include <helper/DirUtil.hpp>
+#include <cef_cmake/reenable_warnings.h>
 
 #include <jsbind.hpp>
+
 
 #define URI_ROOT "http://htmldemos"
 const char* const URL = URI_ROOT "/cef-echo.html";
@@ -21,7 +24,7 @@ void setupResourceManagerDirectoryProvider(CefRefPtr<CefResourceManager> resourc
 {
     if (!CefCurrentlyOn(TID_IO)) {
         // Execute on the browser IO thread.
-        CefPostTask(TID_IO, base::Bind(&setupResourceManagerDirectoryProvider, resource_manager, uri, dir));
+        CefPostTask(TID_IO, base::Bind(&setupResourceManagerDirectoryProvider,resource_manager, uri, dir));
         return;
     }
 
@@ -43,7 +46,7 @@ public:
     CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override { return this; }
     CefRefPtr<CefRequestHandler> GetRequestHandler() override { return this; }
 
-    void OnBeforeClose(CefRefPtr<CefBrowser> browser) override
+    void OnBeforeClose(CefRefPtr<CefBrowser> /*browser*/) override
     {
         CefQuitMessageLoop();
     }
@@ -76,13 +79,13 @@ public:
         return m_resourceManager->GetResourceHandler(browser, frame, request);
     }
 
-    bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
+    bool OnProcessMessageReceived(CefRefPtr<CefBrowser> /*browser*/,
         CefRefPtr<CefFrame> frame,
-        CefProcessId source_process,
+        CefProcessId /*source_process*/,
         CefRefPtr<CefProcessMessage> message) override
     {
         if (message->GetName() == "onEcho")
-        {            
+        {
             auto text = message->GetArgumentList()->GetString(0).ToString();
             std::cout << "onEcho received: " << text << std::endl;
             auto response = CefProcessMessage::Create("onEchoResponse");
@@ -143,10 +146,10 @@ public:
         jsbind::deinitialize();
     }
 
-    bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
-        CefRefPtr<CefFrame> frame,
-        CefProcessId source_process,
-        CefRefPtr<CefProcessMessage> message) override 
+    bool OnProcessMessageReceived(CefRefPtr<CefBrowser> /*browser*/,
+        CefRefPtr<CefFrame> /*frame*/,
+        CefProcessId /*source_process*/,
+        CefRefPtr<CefProcessMessage> message) override
     {
         if (message->GetName() == "onEchoResponse")
         {
