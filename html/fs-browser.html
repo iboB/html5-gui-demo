@@ -103,6 +103,8 @@ const appTypeText = document.getElementById('apptype');
 
 function setupCef() {
     appTypeText.innerHTML = 'CEF';
+    request = Module.request;
+    Module.setOnResponse(onResponse);
     requestContents('');
 }
 
