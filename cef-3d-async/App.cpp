@@ -254,6 +254,49 @@ void App::shutdown()
     sg_shutdown();
 }
 
+void App::onEvent(const sapp_event& e)
+{
+    auto mouseButtonToCef = [](sapp_mousebutton b) -> cef_mouse_button_type_t
+    {
+        switch (b) {
+            case SAPP_MOUSEBUTTON_LEFT: return MBT_LEFT;
+            case SAPP_MOUSEBUTTON_RIGHT: return MBT_RIGHT;
+            case SAPP_MOUSEBUTTON_MIDDLE: return MBT_MIDDLE;
+            default: return MBT_RIGHT;
+        }
+    };
+
+    auto host = m_browser->GetHost();
+    switch (e.type)
+    {
+    case SAPP_EVENTTYPE_MOUSE_MOVE:
+    {
+        CefMouseEvent cef;
+        cef.x = e.mouse_x;
+        cef.y = e.mouse_y;
+        host->SendMouseMoveEvent(cef, false);
+    }
+    break;
+    case SAPP_EVENTTYPE_MOUSE_DOWN:
+    {
+        CefMouseEvent cef;
+        cef.x = e.mouse_x;
+        cef.y = e.mouse_y;
+        host->SendMouseClickEvent(cef, mouseButtonToCef(e.mouse_button), false, 1);
+    }
+    break;
+    case SAPP_EVENTTYPE_MOUSE_UP:
+    {
+        CefMouseEvent cef;
+        cef.x = e.mouse_x;
+        cef.y = e.mouse_y;
+        host->SendMouseClickEvent(cef, mouseButtonToCef(e.mouse_button), true, 1);
+    }
+    break;
+    default:;
+    }
+}
+
 bool App::OnProcessMessageReceived(CefRefPtr<CefBrowser> /*browser*/, CefRefPtr<CefFrame> /*frame*/,
         CefProcessId /*source_process*/, CefRefPtr<CefProcessMessage> /*message*/)
 {
@@ -301,9 +344,9 @@ void scleanup()
     g_app->shutdown();
 }
 
-void sonEvent(const sapp_event*)
+void sonEvent(const sapp_event* e)
 {
-
+    g_app->onEvent(*e);
 }
 }
 

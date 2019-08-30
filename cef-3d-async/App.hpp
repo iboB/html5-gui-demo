@@ -29,6 +29,7 @@ public:
     void init();
     void mainLoop();
     void shutdown();
+    void onEvent(const sapp_event& e);
 
     /////////////////////////////////////
     // CEF
