@@ -78,10 +78,10 @@ public:
     {
         {
             CefVertex vertices[] = {
-                {{-1, -1}, {0, 0}},
-                {{1, -1}, {1, 0}},
-                {{1, 1}, {1, 1}},
-                {{-1, 1}, {0, 1}},
+                {{-1, 1}, {0, 0}},
+                {{1, 1}, {1, 0}},
+                {{1, -1}, {1, 1}},
+                {{-1, -1}, {0, 1}},
             };
 
             sg_buffer_desc vbuf = { };
@@ -128,20 +128,6 @@ public:
             desc.blend.color_write_mask = SG_COLORMASK_RGB;
             m_pipeline = sg_make_pipeline(&desc);
         }
-
-        {
-            sg_image_desc desc = {};
-            desc.width = 1;
-            desc.height = 1;
-            desc.pixel_format = SG_PIXELFORMAT_RGBA8;
-            desc.wrap_u = SG_WRAP_CLAMP_TO_EDGE;
-            desc.wrap_v = SG_WRAP_CLAMP_TO_EDGE;
-            uint32_t x = 0xFFFFFFFF;
-            desc.content.subimage[0][0].ptr = &x;
-            desc.content.subimage[0][0].size = sizeof(uint32_t);
-            m_cefTexture = sg_make_image(&desc);
-            m_bindings.fs_images[0] = m_cefTexture;
-        }
     }
 
     ~CefSokolRenderer()
@@ -150,7 +136,10 @@ public:
         sg_destroy_shader(m_shader);
         sg_destroy_buffer(m_bindings.vertex_buffers[0]);
         sg_destroy_buffer(m_bindings.index_buffer);
-        sg_destroy_image(m_cefTexture);
+        if (m_cefTexture.id)
+        {
+            sg_destroy_image(m_cefTexture);
+        }
     }
 
     void draw()
@@ -161,9 +150,41 @@ public:
         sg_draw(0, 6, 1);
     }
 
+    void updateTextureFromCef(const void* buffer, int width, int height)
+    {
+        // buffer is bgra
+        if (m_imgWidth != width || m_imgHeight != height) {
+            if (m_cefTexture.id)
+            {
+                sg_destroy_image(m_cefTexture);
+            }
+
+            sg_image_desc desc = {};
+            desc.width = width;
+            desc.height = height;
+            desc.usage = SG_USAGE_DYNAMIC;
+            desc.pixel_format = SG_PIXELFORMAT_RGBA8;
+            desc.wrap_u = SG_WRAP_CLAMP_TO_EDGE;
+            desc.wrap_v = SG_WRAP_CLAMP_TO_EDGE;
+
+            m_imgWidth = width;
+            m_imgHeight = height;
+
+            m_cefTexture = sg_make_image(&desc);
+            m_bindings.fs_images[0] = m_cefTexture;
+        }
+
+        if (!m_cefTexture.id) return;
+
+        sg_image_content content = {};
+        content.subimage[0][0].ptr = buffer;
+        content.subimage[0][0].size = 4 * width * height;
+        sg_update_image(m_cefTexture, &content);
+    }
+
     sg_pipeline m_pipeline = {};
     sg_bindings m_bindings = {};
-    int img_with = 0, img_height = 0;
+    int m_imgWidth = 0, m_imgHeight = 0;
     sg_image m_cefTexture = {};
     sg_shader m_shader = {};
 };
@@ -260,8 +281,7 @@ void App::OnPaint(CefRefPtr<CefBrowser> /*browser*/, PaintElementType /*type*/,
     const RectList& /*dirtyRects*/, const void* buffer, int width, int height)
 {
     if (!m_cefSokolRenderer) return;
-    // buffer is bgra
-
+    m_cefSokolRenderer->updateTextureFromCef(buffer, width, height);
 }
 
 namespace
