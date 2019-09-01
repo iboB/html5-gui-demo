@@ -21,6 +21,20 @@ public:
     virtual void draw() = 0;
     virtual void onEvent(const sapp_event& e) = 0;
     virtual void shutdown() = 0;
+
+    enum RotationAxis
+    {
+        R_X, R_Y, R_Z,
+    };
+
+    RotationAxis rotationAxis() const { return m_rotationAxis; }
+    bool rotating() const { return m_rotating; }
+    float rotationSpeed() const { return m_rotationSpeed; }
+
+protected:
+    RotationAxis m_rotationAxis = R_X;
+    float m_rotationSpeed = 1; // radians per second
+    bool m_rotating = false;
 };
 
 }

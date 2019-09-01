@@ -35,25 +35,26 @@ void setupResourceManagerDirectoryProvider(CefRefPtr<CefResourceManager> resourc
     resource_manager->AddDirectoryProvider(uri, dir, 1, dir);
 }
 
-const char* cef_vs_src =
-"#version 330\n"
-"in vec2 position;\n"
-"in vec2 texcoord;\n"
-"out vec2 uv;\n"
-"out vec4 color;\n"
-"void main() {\n"
-"    gl_Position = vec4(position, 0, 1);\n"
-"    uv = texcoord;\n"
-"}\n";
+const char* cef_vs_src = R"glsl(
+#version 330
+in vec2 position;
+in vec2 texcoord;
+out vec2 uv;
+void main() {
+    gl_Position = vec4(position, 0, 1);
+    uv = texcoord;
+};
+)glsl";
 
-const char* cef_fs_src =
-"#version 330\n"
-"uniform sampler2D tex;\n"
-"in vec2 uv;\n"
-"out vec4 frag_color;\n"
-"void main() {\n"
-"    frag_color = texture(tex, uv);\n"
-"}\n";
+const char* cef_fs_src = R"glsl(
+#version 330
+uniform sampler2D tex;
+in vec2 uv;
+out vec4 frag_color;
+void main() {
+    frag_color = texture(tex, uv);
+};
+)glsl";
 
 struct float3
 {
@@ -224,7 +225,8 @@ public:
     void updateTextureFromCef(const void* buffer, int width, int height)
     {
         // buffer is bgra
-        if (m_imgWidth != width || m_imgHeight != height) {
+        if (m_imgWidth != width || m_imgHeight != height)
+        {
             if (m_cefTexture.id)
             {
                 sg_destroy_image(m_cefTexture);
