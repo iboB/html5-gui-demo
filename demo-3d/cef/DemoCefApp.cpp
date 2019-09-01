@@ -222,15 +222,16 @@ public:
         m_browser = nullptr;
     }
 
-    void updateTextureFromCef(const void* buffer, int width, int height)
+    void updateTextureFromCef(const uint8_t* buffer, int width, int height)
     {
-        // buffer is bgra
         if (m_imgWidth != width || m_imgHeight != height)
         {
             if (m_cefTexture.id)
             {
                 sg_destroy_image(m_cefTexture);
             }
+
+            m_imgBuffer.resize(width * height * 4);
 
             sg_image_desc desc = {};
             desc.width = width;
@@ -249,8 +250,18 @@ public:
 
         if (!m_cefTexture.id) return;
 
+        // bgra to rgba
+        for (size_t i=0; i<m_imgBuffer.size(); i+=4)
+        {
+            auto p = m_imgBuffer.data() + i;
+            p[2] = *buffer++;
+            p[1] = *buffer++;
+            p[0] = *buffer++;
+            p[3] = *buffer++;
+        }
+
         sg_image_content content = {};
-        content.subimage[0][0].ptr = buffer;
+        content.subimage[0][0].ptr = m_imgBuffer.data();
         content.subimage[0][0].size = 4 * width * height;
         sg_update_image(m_cefTexture, &content);
     }
@@ -298,7 +309,7 @@ public:
     void OnPaint(CefRefPtr<CefBrowser> /*browser*/, PaintElementType /*type*/,
         const RectList& /*dirtyRects*/, const void* buffer, int width, int height) override
     {
-        updateTextureFromCef(buffer, width, height);
+        updateTextureFromCef(reinterpret_cast<const uint8_t*>(buffer), width, height);
     }
 
 private:
@@ -308,6 +319,7 @@ private:
     sg_pipeline m_pipeline = {};
     sg_bindings m_bindings = {};
     int m_imgWidth = 0, m_imgHeight = 0;
+    std::vector<uint8_t> m_imgBuffer;
     sg_image m_cefTexture = {};
     sg_shader m_shader = {};
 
