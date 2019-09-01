@@ -5,23 +5,14 @@
 // See accompanying file LICENSE.txt or copy at
 // https://opensource.org/licenses/MIT
 //
-#include "App.hpp"
+#include "DemoCefApp.hpp"
 #include "DemoCefRendererApp.hpp"
 
 #include <cef_cmake/disable_warnings.h>
 #include <include/cef_app.h>
-
-#define SOKOL_NO_DEPRECATED
-#define SOKOL_IMPL
-#define SOKOL_NO_ENTRY
-#define SOKOL_GLCORE33
-#if !defined(NDEBUG)
-#   define SOKOL_DEBUG 1
-#endif
-
-#include <sokol_app.h>
-#include <sokol_gfx.h>
 #include <cef_cmake/reenable_warnings.h>
+
+#include <demo/Demo.hpp>
 
 #include "URL.h"
 
@@ -66,15 +57,9 @@ int main(int argc, char* argv[])
 
     CefInitialize(args, settings, nullptr, windowsSandboxInfo);
 
-    CefRefPtr<App> app = new App;
+    // run sokol demo
+    int ret = demo::Demo::run(std::make_unique<DemoCefApp>());
 
-    // init sokol
-    sapp_desc desc = app->getSokolDesc();
-
-    int ret = sapp_run(&desc);
-
-    // clear last refs so they gets destroyed
-    app = nullptr;
     CefShutdown();
 
     return ret;

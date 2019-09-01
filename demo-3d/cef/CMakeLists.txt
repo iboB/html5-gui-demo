@@ -1,7 +1,7 @@
 add_executable(cef-3d-async
     cef-3d-async-main.cpp
-    App.hpp
-    App.cpp
+    DemoCefApp.hpp
+    DemoCefApp.cpp
     DemoCefRendererApp.cpp
     DemoCefRendererApp.hpp
     URL.h
@@ -9,7 +9,7 @@ add_executable(cef-3d-async
 )
 
 target_link_libraries(cef-3d-async
-    sokol
+    sokol-demo
     cefdll_wrapper
     jsbind-cef
     helper_lib
@@ -25,4 +25,4 @@ if (CEF_CMAKE_OS_POSIX)
     )
 endif()
 
-set_target_properties(cef-3d-async PROPERTIES FOLDER "demos")
+set_target_properties(cef-3d-async PROPERTIES FOLDER "demos\\demo-3d")
