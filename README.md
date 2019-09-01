@@ -7,6 +7,7 @@ Demos for using HTML 5 as a GUI for C++ apps
 * [cef-async](cef-async): A simple [CEF](https://bitbucket.org/chromiumembedded/cef-project/src/master/) echo application using *asynchronous* communication
 * [cef-sync](cef-sync): A simple [CEF](https://bitbucket.org/chromiumembedded/cef-project/src/master/) echo application using synchronous communication
 * [fs-browser](fs-browser): A simple filesystem browser demo with two implementations: WebSockets and CEF
+* [demo-3d](demo-3d): A simple demo with GUI over a custom OpenGL window with two implementations: No GUI and CEF
 
 # Building
 
