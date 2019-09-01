@@ -347,7 +347,7 @@ void App::mainLoop()
         {
             r -= M_PI * 2;
             ++m_revolutions.c[a];
-            // TODO: update GUI
+            m_gui->updateRevolutions(m_revolutions.c);
         }
     }
 
@@ -356,10 +356,10 @@ void App::mainLoop()
     sg_pass_action passAction = {};
 
     passAction.colors[0].action = SG_ACTION_CLEAR;
-    passAction.colors[0].val[0] = 0.2f;
-    passAction.colors[0].val[1] = 0.3f;
-    passAction.colors[0].val[2] = 0.5f;
-    passAction.colors[0].val[3] = 1.0f;
+    passAction.colors[0].val[0] = 1;
+    passAction.colors[0].val[1] = 1;
+    passAction.colors[0].val[2] = 1;
+    passAction.colors[0].val[3] = 1;
     passAction.depth.action = SG_ACTION_CLEAR;
     passAction.depth.val = 1;
     passAction.stencil.action = SG_ACTION_DONTCARE;

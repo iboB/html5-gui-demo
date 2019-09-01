@@ -17,6 +17,8 @@ public:
     DemoCefRendererApp();
     ~DemoCefRendererApp();
 
+    CefRefPtr<CefRenderProcessHandler> GetRenderProcessHandler() override { return this; }
+
     void OnContextCreated(CefRefPtr<CefBrowser> browser,
         CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context) override;
     void OnContextReleased(CefRefPtr<CefBrowser> browser,

@@ -38,6 +38,10 @@ class NoGUI : public demo::GUI
     {
         delete this;
     }
+    void updateRevolutions(const int* rev) override
+    {
+        printf("Revs: %d %d %d\n", rev[0], rev[1], rev[2]);
+    }
 };
 }
 

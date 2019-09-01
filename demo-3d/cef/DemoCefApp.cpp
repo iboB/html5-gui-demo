@@ -222,6 +222,20 @@ public:
         m_browser = nullptr;
     }
 
+    void updateRevolutions(const int* rev) override
+    {
+        std::ostringstream sout;
+        sout << "{";
+        sout << R"json("x":)json" << rev[0] << ",";
+        sout << R"json("y":)json" << rev[1] << ",";
+        sout << R"json("z":)json" << rev[2];
+        sout << "}";
+
+        auto msg = CefProcessMessage::Create("msgFromApp");
+        msg->GetArgumentList()->SetString(0, sout.str());
+        m_browser->GetMainFrame()->SendProcessMessage(PID_RENDERER, msg);
+    }
+
     void updateTextureFromCef(const uint8_t* buffer, int width, int height)
     {
         if (m_imgWidth != width || m_imgHeight != height)
@@ -272,8 +286,25 @@ public:
     CefRefPtr<CefRenderHandler> GetRenderHandler() override { return this; }
 
     bool OnProcessMessageReceived(CefRefPtr<CefBrowser> /*browser*/, CefRefPtr<CefFrame> /*frame*/,
-        CefProcessId /*source_process*/, CefRefPtr<CefProcessMessage> /*message*/) override
+        CefProcessId /*source_process*/, CefRefPtr<CefProcessMessage> message) override
     {
+        if (message->GetName() == "msgFromGUI")
+        {
+            auto msg = message->GetArgumentList()->GetString(0).ToString();
+            switch(msg[0])
+            {
+                case 'a':
+                    m_rotationAxis = RotationAxis(atoi(msg.c_str() + 2));
+                    break;
+                case 'r':
+                    m_rotating = msg[2] == 't';
+                    break;
+                case 's':
+                    m_rotationSpeed = float(atof(msg.c_str() + 2));
+                    break;
+            }
+            return true;
+        }
         return false;
     }
 

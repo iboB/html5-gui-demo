@@ -22,6 +22,9 @@ public:
     virtual void onEvent(const sapp_event& e) = 0;
     virtual void shutdown() = 0;
 
+    // update revolutions with a pointer to three integers x;y;z
+    virtual void updateRevolutions(const int* rev) = 0;
+
     enum RotationAxis
     {
         R_X, R_Y, R_Z,

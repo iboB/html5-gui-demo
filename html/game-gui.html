@@ -1,8 +1,217 @@
 <!DOCTYPE html>
 <head>
-    <title>Game GUI</title>
+<title>Game GUI</title>
+<style>
+* { margin:0; padding:0; } /* clear all */
+body {
+    font-family: monospace;
+    font-size: 20px;
+}
+h1 {
+    padding: 10px;
+    background-color: darkred;
+    color: white;
+}
+h2 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+.content {
+    padding: 20px;
+}
+.rotating {
+    margin-left: 20px;
+}
+.rotating .container {
+    display: block;
+    position: relative;
+    padding-left: 35px;
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+.rotating .container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+.rotating .checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 25px;
+    width: 25px;
+    background-color: #eee;
+}
+.rotating .container:hover input ~ .checkmark {
+    background-color: #ccc;
+}
+.rotating .container input:checked ~ .checkmark {
+    background-color: #2196F3;
+}
+.rotating .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+.rotating .container input:checked ~ .checkmark:after {
+    display: block;
+}
+.rotating .container .checkmark:after {
+    left: 9px;
+    top: 5px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+.revolutions {
+    margin-left: 20px;
+}
+.revolutions .rev {
+    margin-right: 20px;
+    display: inline-block;
+}
+.rotation-axis {
+    margin-left: 20px;
+}
+.rotation-axis .container {
+    display: inline-block;
+    position: relative;
+    padding-left: 35px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    margin-right: 20px;
+}
+.rotation-axis .container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+.rotation-axis .checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 25px;
+    width: 25px;
+    background-color: #eee;
+    border-radius: 50%;
+}
+.rotation-axis .container:hover input ~ .checkmark {
+    background-color: #ccc;
+}
+.rotation-axis .container input:checked ~ .checkmark {
+    background-color: #2196F3;
+}
+.rotation-axis .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+.rotation-axis .container input:checked ~ .checkmark:after {
+    display: block;
+}
+.rotation-axis .container .checkmark:after {
+    top: 9px;
+    left: 9px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: white;
+}
+.rotation-speed {
+    margin-left: 20px;
+}
+.rotation-speed .rspeedb {
+    display: inline-block;
+    cursor: pointer;
+    background-color: #ccc;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+.rotation-speed .rspeedb:hover {
+    background-color: #2196F3;
+}
+.rotation-speed .rspeedl {
+    display: inline-block;
+}
+</style>
 </head>
 <body>
-    <p>test</p>
-    <button>asd</button>
+<h1>Box Rotation GUI</h1>
+<div class="content">
+    <h2>Revolutions</h2>
+    <div class="revolutions">
+        <div class="rev" id="rev-x">x: 0</div>
+        <div class="rev" id="rev-y">y: 0</div>
+        <div class="rev" id="rev-z">z: 0</div>
+    </div>
+    <h2>Rotation</h2>
+    <div class="rotating">
+        <label class="container">
+            Rotating
+            <input type="checkbox" onclick="rotating(this)">
+            <span class="checkmark"></span>
+        </label>
+    </div>
+    <h2>Rotation Axis</h2>
+    <div class="rotation-axis">
+        <label class="container">
+            X
+            <input type="radio" checked="checked" name="raxis" onclick="axis(0)">
+            <span class="checkmark"></span>
+        </label>
+        <label class="container">
+            Y
+            <input type="radio" name="raxis" onclick="axis(1)">
+            <span class="checkmark"></span>
+        </label>
+        <label class="container">
+            Z
+            <input type="radio" name="raxis" onclick="axis(2)">
+            <span class="checkmark"></span>
+        </label>
+    </div>
+    <h2>Rotation Speed</h2>
+    <div class="rotation-speed">
+        <div class="rspeedb" onclick="rspeed(-0.3)">-</div>
+        <div class="rspeedl" id="rotation-speed">1.000</div>
+        <div class="rspeedb" onclick="rspeed(0.3)">+</div>
+    </div>
+</div>
+
+<script>
+'use strict';
+function rotating(elem) {
+    Module.send('r:' + String(elem.checked));
+}
+function axis(i) {
+    Module.send('a:' + String(i));
+}
+var speed = 1;
+const speedl = document.getElementById('rotation-speed');
+function rspeed(f) {
+    speed += f;
+    if (speed < 0) speed = 0;
+    let pspeed = speed.toPrecision(4);
+    speedl.innerHTML = pspeed;
+    Module.send('s:' + pspeed);
+}
+const revx = document.getElementById('rev-x');
+const revy = document.getElementById('rev-y');
+const revz = document.getElementById('rev-z');
+function receive(json) {
+    let obj = JSON.parse(json);
+    revx.innerHTML = 'x: ' + String(obj.x);
+    revy.innerHTML = 'y: ' + String(obj.y);
+    revz.innerHTML = 'z: ' + String(obj.z);
+}
+Module.setReceiveFunc(receive);
+</script>
 </body>
