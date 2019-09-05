@@ -3,6 +3,13 @@ add_subdirectory(browser-lib)
 
 set_target_properties(fsbrowser PROPERTIES FOLDER "demos\\fs-browser")
 
+# CLI
+add_executable(fs-cli
+    cli/fs-cli.cpp
+)
+
+target_link_libraries(fs-cli fsbrowser)
+
 # WS
 add_executable(fs-ws-server
     ws-server/fs-ws-server.cpp
