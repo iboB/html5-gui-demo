@@ -50,6 +50,7 @@ int main(int argc, char* argv[])
     }
 
     CefSettings settings;
+    settings.remote_debugging_port = 1234;
     settings.windowless_rendering_enabled = 1;
 #if !defined(CEF_USE_SANDBOX)
     settings.no_sandbox = true;

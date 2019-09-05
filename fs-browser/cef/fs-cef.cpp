@@ -209,6 +209,7 @@ int main(int argc, char* argv[])
     }
 
     CefSettings settings;
+    settings.remote_debugging_port = 1234;
 #if !defined(CEF_USE_SANDBOX)
     settings.no_sandbox = true;
 #endif
