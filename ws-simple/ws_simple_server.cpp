@@ -104,10 +104,10 @@ public:
     {
         cout << "Received: " << packet->textBuffer << '\n';
         // echo
-        write(packet);
+        send(packet);
     }
 
-    void write(const PacketPtr& packet)
+    void send(const PacketPtr& packet)
     {
         m_writeQueue.emplace_back(packet);
         if (m_writeQueue.size() > 1) return; // we're already writing

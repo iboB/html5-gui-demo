@@ -105,17 +105,17 @@ public:
     void onReceive(const PacketPtr& packet)
     {
         cout << "Received: " << packet->textBuffer << '\n';
-        
+
         auto resp = m_fsBrowser.onRequest(packet->textBuffer);
 
         auto respPacket = make_shared<Packet>();
         respPacket->text = true;
         respPacket->textBuffer = resp;
 
-        write(respPacket);
+        send(respPacket);
     }
 
-    void write(const PacketPtr& packet)
+    void send(const PacketPtr& packet)
     {
         m_writeQueue.emplace_back(packet);
         if (m_writeQueue.size() > 1) return; // we're already writing
