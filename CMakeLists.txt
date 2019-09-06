@@ -9,6 +9,8 @@ project(html5-gui-demo)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+option(HTML_5_DEMO_CLI_ONLY "only enable command-line demos (suitable when there's no X)" OFF)
+
 ######################
 # warnings
 if(MSVC)
@@ -39,12 +41,15 @@ include(cef_cmake)
 ######################
 # subdirectories
 add_subdirectory(third_party)
-set_target_properties(cefdll_wrapper PROPERTIES FOLDER "third_party")
+if(NOT HTML_5_DEMO_CLI_ONLY)
+    set_target_properties(cefdll_wrapper PROPERTIES FOLDER "third_party")
+endif()
 
 add_subdirectory(helper_lib)
-
 add_subdirectory(ws-simple)
-add_subdirectory(cef-sync)
-add_subdirectory(cef-async)
+if(NOT HTML_5_DEMO_CLI_ONLY)
+    add_subdirectory(cef-sync)
+    add_subdirectory(cef-async)
+    add_subdirectory(demo-3d)
+endif()
 add_subdirectory(fs-browser)
-add_subdirectory(demo-3d)
