@@ -200,24 +200,24 @@ public:
         case SAPP_EVENTTYPE_MOUSE_MOVE:
         {
             CefMouseEvent cef;
-            cef.x = e.mouse_x;
-            cef.y = e.mouse_y;
+            cef.x = int(e.mouse_x);
+            cef.y = int(e.mouse_y);
             host->SendMouseMoveEvent(cef, false);
         }
         break;
         case SAPP_EVENTTYPE_MOUSE_DOWN:
         {
             CefMouseEvent cef;
-            cef.x = e.mouse_x;
-            cef.y = e.mouse_y;
+            cef.x = int(e.mouse_x);
+            cef.y = int(e.mouse_y);
             host->SendMouseClickEvent(cef, mouseButtonToCef(e.mouse_button), false, 1);
         }
         break;
         case SAPP_EVENTTYPE_MOUSE_UP:
         {
             CefMouseEvent cef;
-            cef.x = e.mouse_x;
-            cef.y = e.mouse_y;
+            cef.x = int(e.mouse_x);
+            cef.y = int(e.mouse_y);
             host->SendMouseClickEvent(cef, mouseButtonToCef(e.mouse_button), true, 1);
         }
         break;
