@@ -159,6 +159,24 @@ public:
     void draw() override
     {
         if (m_cefTexture.id == 0) return;
+
+        if (m_imgDirty)
+        {
+            // bgra to rgba
+            for (size_t i=0; i<m_imgBuffer.size(); i+=4)
+            {
+                auto p = m_imgBuffer.data() + i;
+                std::swap(p[2], p[0]);
+            }
+
+            sg_image_content content = {};
+            content.subimage[0][0].ptr = m_imgBuffer.data();
+            content.subimage[0][0].size = 4 * m_imgWidth * m_imgHeight;
+            sg_update_image(m_cefTexture, &content);
+
+            m_imgDirty = false;
+        }
+
         sg_apply_pipeline(m_pipeline);
         sg_apply_bindings(&m_bindings);
         sg_draw(0, 6, 1);
@@ -238,6 +256,8 @@ public:
 
     void updateTextureFromCef(const uint8_t* buffer, int width, int height)
     {
+        // there can be multiple updates per frame from cef, so we collect our
+        // img data and mark the image as dirty
         if (m_imgWidth != width || m_imgHeight != height)
         {
             if (m_cefTexture.id)
@@ -262,22 +282,9 @@ public:
             m_bindings.fs_images[0] = m_cefTexture;
         }
 
-        if (!m_cefTexture.id) return;
+        memcpy(m_imgBuffer.data(), buffer, m_imgBuffer.size());
 
-        // bgra to rgba
-        for (size_t i=0; i<m_imgBuffer.size(); i+=4)
-        {
-            auto p = m_imgBuffer.data() + i;
-            p[2] = *buffer++;
-            p[1] = *buffer++;
-            p[0] = *buffer++;
-            p[3] = *buffer++;
-        }
-
-        sg_image_content content = {};
-        content.subimage[0][0].ptr = m_imgBuffer.data();
-        content.subimage[0][0].size = 4 * width * height;
-        sg_update_image(m_cefTexture, &content);
+        m_imgDirty = true;
     }
 
     /////////////////////////////////////
@@ -351,6 +358,7 @@ private:
     sg_bindings m_bindings = {};
     int m_imgWidth = 0, m_imgHeight = 0;
     std::vector<uint8_t> m_imgBuffer;
+    bool m_imgDirty = true;
     sg_image m_cefTexture = {};
     sg_shader m_shader = {};
 
