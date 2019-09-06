@@ -16,6 +16,8 @@
 #include <cmath>
 #include <chrono>
 
+constexpr float PI = 3.14159265f;
+
 namespace demo
 {
 
@@ -343,9 +345,9 @@ void App::mainLoop()
         auto a = m_gui->rotationAxis();
         auto& r = m_rotation.c[a];
         r += (float(m_timeSinceLastFrame) / 1000) * m_gui->rotationSpeed();
-        if (r > M_PI * 2)
+        if (r > PI * 2)
         {
-            r -= M_PI * 2;
+            r -= PI * 2;
             ++m_revolutions.c[a];
             m_gui->updateRevolutions(m_revolutions.c);
         }
