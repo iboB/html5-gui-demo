@@ -16,9 +16,9 @@ function init() {
         writeToScreen('CONNECTED', output);
         doSend('WebSocket rocks!');
     };
-    ws.onclose = () => writeToScreen('DISCONNECTED');
-    ws.onmessage = msg => writeToScreen('<span style="color: blue;">RESPONSE: ' + msg.data + '</span>');
-    ws.onerror = msg => writeToScreen('<span style="color: red;">ERROR: ' + msg.data + '</span>');
+    ws.onclose = () => writeToScreen('<p style="color: red;">DISCONNECTED</p>');
+    ws.onmessage = msg => writeToScreen('<p style="color: blue;">RESPONSE: ' + msg.data + '</p>');
+    ws.onerror = msg => writeToScreen('<p style="color: red;">ERROR: ' + msg.data + '</p>');
 }
 
 function writeToScreen(message) {
@@ -53,12 +53,12 @@ function wsSendBinary() {
 }
 </script>
 </head>
-<body>
+<body style="font-family: sans-serif; font-size: 1.5em">
     <h1>Echo</h1>
 
-    <input type="text" id="data_to_send" value="hello"></input>
-    <button id="sender" onClick="wsSend()">Send</button>
-    <button id="sender_binary" onClick="wsSendBinary()">Send Binary</button>
+    <input style="font-size: 1.3em" type="text" id="data_to_send" value="hello"></input>
+    <button style="font-size: 1.3em" id="sender" onClick="wsSend()">Send</button>
+    <button style="font-size: 1.3em" id="sender_binary" onClick="wsSendBinary()">Send Binary</button>
 
     <div id="output"></div>
 </body>
