@@ -221,6 +221,9 @@ public:
             host->SendMouseClickEvent(cef, mouseButtonToCef(e.mouse_button), true, 1);
         }
         break;
+        case SAPP_EVENTTYPE_RESIZED:
+            host->WasResized();
+        break;
         default:;
         }
     }
