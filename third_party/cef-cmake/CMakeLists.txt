@@ -93,11 +93,9 @@ add_custom_command(TARGET cefdll_wrapper POST_BUILD
         ${CMAKE_CURRENT_SOURCE_DIR}/${cefName}/Resources/locales
         ${CEF_CMAKE_OUTPUT_DIR}/locales
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_CURRENT_SOURCE_DIR}/${cefName}/Resources/cef.pak
-        ${CMAKE_CURRENT_SOURCE_DIR}/${cefName}/Resources/cef_100_percent.pak
-        ${CMAKE_CURRENT_SOURCE_DIR}/${cefName}/Resources/cef_200_percent.pak
-        ${CMAKE_CURRENT_SOURCE_DIR}/${cefName}/Resources/cef_extensions.pak
-        ${CMAKE_CURRENT_SOURCE_DIR}/${cefName}/Resources/devtools_resources.pak
+        ${CMAKE_CURRENT_SOURCE_DIR}/${cefName}/Resources/chrome_100_percent.pak
+        ${CMAKE_CURRENT_SOURCE_DIR}/${cefName}/Resources/chrome_200_percent.pak
+        ${CMAKE_CURRENT_SOURCE_DIR}/${cefName}/Resources/resources.pak
         ${CMAKE_CURRENT_SOURCE_DIR}/${cefName}/Resources/icudtl.dat
         ${CEF_CMAKE_OUTPUT_DIR}
 )
@@ -157,18 +155,17 @@ elseif(CEF_CMAKE_OS_WINDOWS)
         COMMENT "cefdll_wrapper: Copying CEF binaries"
         COMMAND ${CMAKE_COMMAND} -E
             make_directory ${CEF_CMAKE_OUTPUT_DIR}
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-            ${CMAKE_CURRENT_SOURCE_DIR}/${cefName}/$<CONFIG>/swiftshader
-            ${CEF_CMAKE_OUTPUT_DIR}/swiftshader
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             ${CMAKE_CURRENT_SOURCE_DIR}/${cefName}/$<CONFIG>/chrome_elf.dll
             ${CMAKE_CURRENT_SOURCE_DIR}/${cefName}/$<CONFIG>/d3dcompiler_47.dll
             ${CMAKE_CURRENT_SOURCE_DIR}/${cefName}/$<CONFIG>/libcef.dll
             ${CMAKE_CURRENT_SOURCE_DIR}/${cefName}/$<CONFIG>/libEGL.dll
             ${CMAKE_CURRENT_SOURCE_DIR}/${cefName}/$<CONFIG>/libGLESv2.dll
-            ${CMAKE_CURRENT_SOURCE_DIR}/${cefName}/$<CONFIG>/natives_blob.bin
             ${CMAKE_CURRENT_SOURCE_DIR}/${cefName}/$<CONFIG>/snapshot_blob.bin
             ${CMAKE_CURRENT_SOURCE_DIR}/${cefName}/$<CONFIG>/v8_context_snapshot.bin
+            ${CMAKE_CURRENT_SOURCE_DIR}/${cefName}/$<CONFIG>/vk_swiftshader.dll
+            ${CMAKE_CURRENT_SOURCE_DIR}/${cefName}/$<CONFIG>/vk_swiftshader_icd.json
+            ${CMAKE_CURRENT_SOURCE_DIR}/${cefName}/$<CONFIG>/vulkan-1.dll
             ${CEF_CMAKE_OUTPUT_DIR}
     )
 

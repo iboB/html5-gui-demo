@@ -28,7 +28,7 @@ void setupResourceManagerDirectoryProvider(CefRefPtr<CefResourceManager> resourc
 {
     if (!CefCurrentlyOn(TID_IO)) {
         // Execute on the browser IO thread.
-        CefPostTask(TID_IO, base::Bind(&setupResourceManagerDirectoryProvider,resource_manager, uri, dir));
+        CefPostTask(TID_IO, base::BindOnce(&setupResourceManagerDirectoryProvider,resource_manager, uri, dir));
         return;
     }
 
@@ -329,7 +329,7 @@ public:
     /////////////////////////////////////
     // resource request handler
     cef_return_value_t OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
-        CefRefPtr<CefFrame> frame, CefRefPtr<CefRequest> request, CefRefPtr<CefRequestCallback> callback) override
+        CefRefPtr<CefFrame> frame, CefRefPtr<CefRequest> request, CefRefPtr<CefCallback> callback) override
     {
         return m_resourceManager->OnBeforeResourceLoad(browser, frame, request, callback);
     }
