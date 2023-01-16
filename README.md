@@ -25,6 +25,16 @@ There's a master CMakeLists.txt in the root directory, which can be used to buil
 
 Currently the only supported configuration is to build all demos. I may provide configuration options to build only selected ones, but it won't be soon. In the meantime I welcome pull requests which do so.
 
+```
+git clone ...
+git submodule update --init
+
+cd <this_folder>
+mkdir build
+cd build
+cmake .. -DHTML5_DEMO_BOOST_DIR=/C/Users/MYPROXY/workspace/extern-libs/boost_1_81_0     # change the path accordingly
+```
+
 ## License
 
 All demos under the MIT license. See accompanying file LICENSE or copy [here](https://opensource.org/licenses/MIT).
