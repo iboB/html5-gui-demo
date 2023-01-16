@@ -6,10 +6,16 @@
 var output;
 var ws;
 
+function getWsUri() {
+    let hostname = window.location.hostname ? window.location.hostname : "127.0.0.1";
+    let wsUri = 'ws://' + hostname + ':7654';
+	return wsUri;
+}
+
 function init() {
     output = document.getElementById("output");
 
-    let wsUri = 'ws://' + window.location.hostname+ ':7654';
+    let wsUri = getWsUri();
 
     ws = new WebSocket(wsUri);
     ws.onopen = () => {
